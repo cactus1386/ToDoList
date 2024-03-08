@@ -1,33 +1,5 @@
 import React from "react";
 
-const FormElementTextarea = () => {
-  return (
-    <section className="py-12 dark:bg-dark">
-      <div className="container">
-        <div className="-mx-4 flex flex-wrap">
-          <DefaultColumn>
-            <DefaultTextarea />
-          </DefaultColumn>
-
-          <DefaultColumn>
-            <ActiveTextarea />
-          </DefaultColumn>
-
-          <DefaultColumn>
-            <DisabledTextarea />
-          </DefaultColumn>
-
-          <DefaultColumn>
-            <MessageTextarea />
-          </DefaultColumn>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-export default FormElementTextarea;
-
 const DefaultColumn = ({ children }) => {
   return (
     <div className="w-full px-4 md:w-1/2 lg:w-1/3">
@@ -39,9 +11,6 @@ const DefaultColumn = ({ children }) => {
 const MessageTextarea = () => {
   return (
     <>
-      <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
-        Your Text
-      </label>
       <div className="relative">
         <textarea
           type="email"
@@ -77,3 +46,19 @@ const MessageTextarea = () => {
     </>
   );
 };
+
+const TextArea = () => {
+  return (
+    <section className="py-12 dark:bg-dark">
+      <div className="container">
+        <div className="-mx-4 flex flex-wrap">
+          <DefaultColumn>
+            <MessageTextarea />
+          </DefaultColumn>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default TextArea;
