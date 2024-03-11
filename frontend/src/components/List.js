@@ -1,50 +1,59 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-const List = () => {
+const TodoList = () => {
+  const [todos, setTodos] = useState([]);
+  const [newTodo, setNewTodo] = useState("");
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/v1/list/")
+      .then((response) => response.json())
+      .then((data) => setTodos(data))
+      .catch((error) => console.error("Error fetching todos:", error));
+  }, []);
+
+  const handleAddTodo = () => {
+    if (newTodo.trim() !== "") {
+      fetch("http://127.0.0.1:8000/api/v1/list/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ task: newTodo }), // Assuming your API expects a 'task' field
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setTodos([...todos, data]); // Add the new todo to the list
+          setNewTodo(""); // Clear input field
+        })
+        .catch((error) => console.error("Error adding todo:", error));
+    }
+  };
+
   return (
-    <div className="w-full">
-      <ul className="space-y-3">
-        <ListItem text="It is a long established fact reader" />
-        <ListItem text="It is a long established fact reader" />
-        <ListItem text="The point of using Lorem Ipsum" />
-        <ListItem text="There are many variations of passages" />
-        <ListItem text="If you are going to use a of Lorem" />
+    <div className="max-w-md mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">My To-Do List</h1>
+      <input
+        type="text"
+        className="w-full px-3 py-2 border rounded-md mb-2"
+        placeholder="Add a new task..."
+        value={newTodo}
+        onChange={(e) => setNewTodo(e.target.value)}
+      />
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+        onClick={handleAddTodo}
+      >
+        Add Task
+      </button>
+      <ul className="mt-4">
+        {todos.map((todo, index) => (
+          <li key={index} className="mb-2">
+            {todo.task} {/* Assuming your API returns a 'task' field */}
+          </li>
+        ))}
       </ul>
     </div>
   );
 };
 
-export default List;
-
-const ListItem = ({ text }) => {
-  return (
-    <li className="flex text-base text-body-color dark:text-dark-6">
-      <span className="mr-2.5 mt-0.5 text-secondary">
-        <svg
-          width={20}
-          height={20}
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g clipPath="url(#clip0_980_24852)">
-            <path
-              d="M10 0.5625C4.78125 0.5625 0.5625 4.78125 0.5625 10C0.5625 15.2188 4.78125 19.4688 10 19.4688C15.2188 19.4688 19.4688 15.2188 19.4688 10C19.4688 4.78125 15.2188 0.5625 10 0.5625ZM10 18.0625C5.5625 18.0625 1.96875 14.4375 1.96875 10C1.96875 5.5625 5.5625 1.96875 10 1.96875C14.4375 1.96875 18.0625 5.59375 18.0625 10.0312C18.0625 14.4375 14.4375 18.0625 10 18.0625Z"
-              fill="currentColor"
-            />
-            <path
-              d="M12.6875 7.09375L8.96875 10.7188L7.28125 9.0625C7 8.78125 6.5625 8.8125 6.28125 9.0625C6 9.34375 6.03125 9.78125 6.28125 10.0625L8.28125 12C8.46875 12.1875 8.71875 12.2813 8.96875 12.2813C9.21875 12.2813 9.46875 12.1875 9.65625 12L13.6875 8.125C13.9688 7.84375 13.9688 7.40625 13.6875 7.125C13.4063 6.84375 12.9688 6.84375 12.6875 7.09375Z"
-              fill="currentColor"
-            />
-          </g>
-          <defs>
-            <clipPath id="clip0_980_24852">
-              <rect width={20} height={20} fill="white" />
-            </clipPath>
-          </defs>
-        </svg>
-      </span>
-      {text}
-    </li>
-  );
-};
+export default TodoList;
