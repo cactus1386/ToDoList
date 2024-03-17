@@ -48,7 +48,7 @@ const TodoList = () => {
       <ul className="mt-4">
         {todos.map((todo, index) => (
           <li key={index} className="mb-2">
-            {todo.task} {/* Assuming your API returns a 'task' field */}
+            {todo.task}
           </li>
         ))}
       </ul>
