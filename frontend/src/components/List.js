@@ -5,7 +5,14 @@ const TodoList = () => {
   const [newTodo, setNewTodo] = useState("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/v1/list/")
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", "Basic cmFkaW46MTIz");
+
+    fetch("http://127.0.0.1:8000/api/v1/tasks/", {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    })
       .then((response) => response.json())
       .then((data) => setTodos(data))
       .catch((error) => console.error("Error fetching todos:", error));
@@ -13,17 +20,21 @@ const TodoList = () => {
 
   const handleAddTodo = () => {
     if (newTodo.trim() !== "") {
-      fetch("http://127.0.0.1:8000/api/v1/list/", {
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", "Basic cmFkaW46MTIz");
+
+      fetch("http://127.0.0.1:8000/api/v1/tasks/create/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: "Basic cmFkaW46MTIz", // Adding authorization header for POST request
         },
-        body: JSON.stringify({ task: newTodo }), // Assuming your API expects a 'task' field
+        body: JSON.stringify({ title: newTodo }), // Change to send 'title' instead of 'task'
       })
         .then((response) => response.json())
         .then((data) => {
-          setTodos([...todos, data]); // Add the new todo to the list
-          setNewTodo(""); // Clear input field
+          setTodos([...todos, data]);
+          setNewTodo("");
         })
         .catch((error) => console.error("Error adding todo:", error));
     }
@@ -48,7 +59,7 @@ const TodoList = () => {
       <ul className="mt-4">
         {todos.map((todo, index) => (
           <li key={index} className="mb-2">
-            {todo.task}
+            {todo.title}
           </li>
         ))}
       </ul>
