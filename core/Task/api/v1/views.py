@@ -24,3 +24,23 @@ def get_tasks(request):
         tasks = Task.objects.filter(author=request.user)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_tasks(request, task_id):
+    try:
+        task = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        return Response(status=status.HTTP_404_NOTFound)
+
+    if request.method == 'PUT':
+        is_complete = request.data.get('is_complete', None)
+        if is_complete is not None:
+            task.is_complete = is_complete
+            task.save()
+            serializer = TaskSerializer(task)
+            return Response(serializer.data)
+
+        else:
+            return Response(status=HTTP_400_BAD_REQUEST)

@@ -40,6 +40,31 @@ const TodoList = () => {
     }
   };
 
+  const handleCheckboxChange = (todoId, isComplete) => {
+    const updatedTodos = todos.map((todo) => {
+      if (todo.id === todoId) {
+        // Update the is_complete field in the frontend
+        todo.is_complete = !isComplete;
+
+        // Update the is_complete field in the backend
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", "Basic cmFkaW46MTIz");
+        myHeaders.append("Content-Type", "application/json");
+
+        fetch(`http://127.0.0.1:8000/api/v1/tasks/${todoId}/`, {
+          method: "PUT",
+          headers: myHeaders,
+          body: JSON.stringify({ is_complete: !isComplete }),
+        })
+          .then((response) => response.json())
+          .then((data) => console.log("Task updated:", data))
+          .catch((error) => console.error("Error updating task:", error));
+      }
+      return todo;
+    });
+    setTodos(updatedTodos);
+  };
+
   return (
     <div className="max-w-md mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">My To-Do List</h1>
@@ -57,10 +82,24 @@ const TodoList = () => {
         Add Task
       </button>
       <ul className="mt-4">
-        {todos.map((todo, index) => (
-          <li key={index} className="mb-2">
-            {todo.title}
-          </li>
+        {todos.map((todo) => (
+          <div key={todo.id} className="flex items-center">
+            <input
+              id={`checkbox-${todo.id}`}
+              type="checkbox"
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              checked={todo.is_complete}
+              onChange={() => handleCheckboxChange(todo.id, todo.is_complete)}
+            />
+            <label
+              htmlFor={`checkbox-${todo.id}`}
+              className={`ms-2 text-lg font-medium ${
+                todo.is_complete ? "line-through text-gray-400" : ""
+              }`}
+            >
+              {todo.title}
+            </label>
+          </div>
         ))}
       </ul>
     </div>
